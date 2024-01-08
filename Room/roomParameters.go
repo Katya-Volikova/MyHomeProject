@@ -43,10 +43,7 @@ func GetRoomParametersFromDB() (Room, error) {
 
 func PrintRoomParameters() {
 	room, err := GetRoomParametersFromDB()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error getting people from the database: %v\n", err)
-		os.Exit(1)
-	}
+	FindError(err)
 
 	PrintTitle("О НАШЕМ ДОМЕ")
 	fmt.Print("\nМы живем в общежитии, в комнате №", room.number, "\nЕе площадь ", room.square, " м")
