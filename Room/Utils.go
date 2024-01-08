@@ -19,7 +19,9 @@ func getDatabase() *pgx.Conn {
 	conn, err := pgx.Connect(context.Background(), urlExample)
 	FindError(err)
 
-	defer conn.Close(context.Background())
-
 	return conn
+}
+
+func PrintTitle(title string) {
+	fmt.Print("\n\n//////////  ", title, "  //////////")
 }

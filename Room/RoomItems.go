@@ -5,16 +5,17 @@ import (
 	"fmt"
 )
 
-type Items struct {
+type Item struct {
 	name     string
 	size     string
 	color    string
 	material string
 }
 
-func GetRoomItemsFromDB() ([]Items, error) {
+func GetRoomItemsFromDB() ([]Item, error) {
 	getDatabase()
 	conn := getDatabase()
+	defer conn.Close(context.Background())
 
 	rows, err := conn.Query(context.Background(), "select name, size, color, material from \"RoomItems\"")
 	if err != nil {
@@ -22,27 +23,27 @@ func GetRoomItemsFromDB() ([]Items, error) {
 	}
 	defer rows.Close()
 
-	var items []Items
+	var itemsMass []Item
 	for rows.Next() {
-		var item Items
+		var item Item
 		if err := rows.Scan(&item.name, &item.size, &item.color, &item.material); err != nil {
 			return nil, err
 		}
-		items = append(items, item)
+		itemsMass = append(itemsMass, item)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return items, nil
+	return itemsMass, nil
 }
 
 func PrintRoomItems() {
 	items, err := GetRoomItemsFromDB()
 	FindError(err)
 
-	fmt.Printf("\n\nВ комнате есть такие предметы:")
+	PrintTitle("ПРЕДМЕТЫ")
 	for i := 0; i < len(items); i++ {
 		fmt.Print("\n\nНазвание: ", items[i].name, "\nРазмер: ", items[i].size, " м", "\nЦвет: ", items[i].color, "\nМатериал: ", items[i].material)
 	}

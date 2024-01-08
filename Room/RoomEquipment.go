@@ -14,6 +14,7 @@ type Equipment struct {
 func GetRoomEquipmentFromDB() ([]Equipment, error) {
 	getDatabase()
 	conn := getDatabase()
+	defer conn.Close(context.Background())
 
 	rows, err := conn.Query(context.Background(), "select name, color, material from \"RoomEquipment\"")
 	if err != nil {
@@ -21,28 +22,28 @@ func GetRoomEquipmentFromDB() ([]Equipment, error) {
 	}
 	defer rows.Close()
 
-	var equipment []Equipment
+	var equipments []Equipment
 	for rows.Next() {
 		var item Equipment
 		if err := rows.Scan(&item.name, &item.color, &item.material); err != nil {
 			return nil, err
 		}
-		equipment = append(equipment, item)
+		equipments = append(equipments, item)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return equipment, nil
+	return equipments, nil
 }
 
 func PrintRoomEquipment() {
-	equipment, err := GetRoomEquipmentFromDB()
+	equipments, err := GetRoomEquipmentFromDB()
 	FindError(err)
 
-	fmt.Printf("\n\nВ комнате есть такая техника:")
-	for i := 0; i < len(equipment); i++ {
-		fmt.Print("\n\nНазвание: ", equipment[i].name, "\nЦвет: ", equipment[i].color, "\nМатериал: ", equipment[i].material)
+	PrintTitle("ТЕХНИКА")
+	for i := 0; i < len(equipments); i++ {
+		fmt.Print("\n\nНазвание: ", equipments[i].name, "\nЦвет: ", equipments[i].color, "\nМатериал: ", equipments[i].material)
 	}
 }

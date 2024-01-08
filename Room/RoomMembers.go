@@ -5,16 +5,17 @@ import (
 	"fmt"
 )
 
-type Neighbours struct {
+type Person struct {
 	name    string
 	age     string
 	country string
 	faculty string
 }
 
-func GetRoomMembersFromDB() ([]Neighbours, error) {
+func GetRoomMembersFromDB() ([]Person, error) {
 	getDatabase()
 	conn := getDatabase()
+	defer conn.Close(context.Background())
 
 	rows, err := conn.Query(context.Background(), "select name, age, faculty, country from \"RoomMembers\"")
 	if err != nil {
@@ -22,28 +23,28 @@ func GetRoomMembersFromDB() ([]Neighbours, error) {
 	}
 	defer rows.Close()
 
-	var neighbours []Neighbours
+	var roomMembers []Person
 	for rows.Next() {
-		var person Neighbours
+		var person Person
 		if err := rows.Scan(&person.name, &person.age, &person.faculty, &person.country); err != nil {
 			return nil, err
 		}
-		neighbours = append(neighbours, person)
+		roomMembers = append(roomMembers, person)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return neighbours, nil
+	return roomMembers, nil
 }
 
 func PrintRoomMembers() {
-	neighbours, err := GetRoomMembersFromDB()
+	roomMembers, err := GetRoomMembersFromDB()
 	FindError(err)
 
-	fmt.Printf("\n\nВ комнате живут:")
-	for i := 0; i < len(neighbours); i++ {
-		fmt.Print("\n\nИмя: ", neighbours[i].name, "\nВозраст: ", neighbours[i].age, " лет", "\nФакультет: ", neighbours[i].faculty, "\nСтрана: ", neighbours[i].country)
+	PrintTitle("ЖИТЕЛИ")
+	for i := 0; i < len(roomMembers); i++ {
+		fmt.Print("\n\nИмя: ", roomMembers[i].name, "\nВозраст: ", roomMembers[i].age, " лет", "\nФакультет: ", roomMembers[i].faculty, "\nСтрана: ", roomMembers[i].country)
 	}
 }
