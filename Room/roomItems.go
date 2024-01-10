@@ -13,7 +13,6 @@ type Item struct {
 }
 
 func GetRoomItemsFromDB() ([]Item, error) {
-	getDatabase()
 	conn := getDatabase()
 	defer conn.Close(context.Background())
 

@@ -13,7 +13,6 @@ type Person struct {
 }
 
 func GetRoomMembersFromDB() ([]Person, error) {
-	getDatabase()
 	conn := getDatabase()
 	defer conn.Close(context.Background())
 

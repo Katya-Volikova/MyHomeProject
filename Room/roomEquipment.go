@@ -12,7 +12,6 @@ type Equipment struct {
 }
 
 func GetRoomEquipmentFromDB() ([]Equipment, error) {
-	getDatabase()
 	conn := getDatabase()
 	defer conn.Close(context.Background())
 

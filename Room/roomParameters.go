@@ -3,7 +3,6 @@ package Room
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"os"
 )
 
@@ -16,16 +15,13 @@ type Room struct {
 }
 
 func GetRoomParametersFromDB() (Room, error) {
-	urlExample := "postgres://userKatya:superSecret@localhost:5436/katya"
-	conn, err := pgx.Connect(context.Background(), urlExample)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
+	conn := getDatabase()
+	defer conn.Close(context.Background())
 
 	defer conn.Close(context.Background())
 
 	rows, err := conn.Query(context.Background(), "select number, square, length, width, height from \"RoomParameters\"")
+	FindError(err)
 	defer rows.Close()
 
 	var myRoom Room
